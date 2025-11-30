@@ -1,6 +1,7 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
+import { API_URL, getAuthHeader } from "../api/config";
 
 function EmployeeList() {
     const [employees, setEmployees] = useState([]);
@@ -10,12 +11,14 @@ function EmployeeList() {
     const token = localStorage.getItem("token");
 
     const fetchEmployees = async () => {
-        const rest = await axios.get("http://localhost:8000/api/employees", {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-        setEmployees(rest.data);
+        try {
+            const response = await axios.get(`${API_URL}/api/employees`, {
+                headers: getAuthHeader()
+            });
+            setEmployees(response.data);
+        } catch (error) {
+            console.error('Error fetching employees:', error);
+        }
     };
 
     useEffect(() => {
@@ -24,21 +27,25 @@ function EmployeeList() {
     }, []);
 
     const handleSearch = async (e) => {
-        const res = await axios.get(`http://localhost:8000/api/employees/search?department=${search}&position=${search}`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-        setEmployees(res.data);
+        try {
+            const res = await axios.get(`${API_URL}/api/employees/search?department=${search}&position=${search}`, {
+                headers: getAuthHeader()
+            });
+            setEmployees(res.data);
+        } catch (error) {
+            console.error('Error searching employees:', error);
+        }
     };
 
     const deleteEmployee = async (id) => {
-        await axios.delete(`http://localhost:8000/api/employees/${id}`, {
-            headers: { 
-                Authorization: `Bearer ${token}`,
-            },
-        });
-        fetchEmployees();
+        try {
+            await axios.delete(`${API_URL}/api/employees/${id}`, {
+                headers: getAuthHeader()
+            });
+            fetchEmployees();
+        } catch (error) {
+            console.error('Error deleting employee:', error);
+        }
     };
 
     const logout = () => {
@@ -82,7 +89,7 @@ function EmployeeList() {
                         <td>
                             {emp.picture && (
                            <img 
-                                  src={`http://localhost:8000/${emp.picture}`} 
+                                  src={`${API_URL}/${emp.picture}`} 
                                   alt={`${emp.first_name} ${emp.last_name}`}
                                   style={{ width: '50px', height: '50px', borderRadius: '50%' }}
                               />

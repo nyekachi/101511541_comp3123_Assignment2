@@ -1,6 +1,7 @@
 import React, {useState} from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { API_URL, getAuthHeader } from "../api/config";
 
 function AddEmployee() {
     const [firstName, setFirstName] = useState("");
@@ -12,7 +13,6 @@ function AddEmployee() {
     const [dateOfJoining, setDateOfJoining] = useState("");
     const [selectedFile, setSelectedFile] = useState(null);
     
-    const token = localStorage.getItem("token");
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
@@ -32,9 +32,9 @@ function AddEmployee() {
         }
         
         try {
-            await axios.post('http://localhost:8084/api/employees', formData, {
+            await axios.post(`${API_URL}/api/employees`, formData, {
                 headers: {
-                    Authorization: `Bearer ${token}`,
+                    ...getAuthHeader(),
                     "Content-Type": "multipart/form-data"
                 }
             });

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { API_URL, getAuthHeader } from "../api/config";
 
 function EditEmployee() {
     const { id } = useParams();
@@ -21,8 +22,8 @@ function EditEmployee() {
     useEffect(() => {
         const fetchEmployee = async () => {
             try {
-                const response = await axios.get(`http://localhost:8084/api/employees/${id}`, {
-                    headers: { Authorization: `Bearer ${token}` }
+                const response = await axios.get(`${API_URL}/api/employees/${id}`, {
+                    headers: getAuthHeader()
                 });
                 // Format date to YYYY-MM-DD for the date input
                 const employeeData = {
@@ -56,9 +57,9 @@ function EditEmployee() {
         }
 
         try {
-            await axios.put(`http://localhost:8084/api/employees/${id}`, formData, {
-                headers: { 
-                    Authorization: `Bearer ${token}`,
+            await axios.put(`${API_URL}/api/employees/${id}`, formData, {
+                headers: {
+                    ...getAuthHeader(),
                     "Content-Type": "multipart/form-data"
                 }
             });

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 import styled from "styled-components";
+import { API_URL, getAuthHeader } from "../api/config";
 
 // Style
 const Container = styled.div`
@@ -145,8 +146,8 @@ function EmployeeDetails() {
     useEffect(() => {
         const fetchEmployee = async () => {
             try {
-                const response = await axios.get(`http://localhost:8084/api/employees/${id}`, {
-                    headers: { Authorization: `Bearer ${token}` }
+                const response = await axios.get(`${API_URL}/api/employees/${id}`, {
+                    headers: getAuthHeader()
                 });
                 setEmployee(response.data);
             } catch (err) {
@@ -180,7 +181,7 @@ function EmployeeDetails() {
                 <EmployeePhoto>
                     {employee.picture ? (
                         <ProfileImage
-                            src={`http://localhost:8084/${employee.picture}`}
+                            src={`${API_URL}/${employee.picture}`}
                             alt={`${employee.first_name} ${employee.last_name}`}
                         />
                     ) : (

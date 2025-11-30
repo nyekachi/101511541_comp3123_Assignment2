@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import {Link, useNavigate} from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { API_URL } from '../api/config';
 
 function Signup() {
   const [name, setname] = useState('');
@@ -11,13 +12,13 @@ function Signup() {
   const handleSignup = async (e) => {
     e.preventDefault();
 
-    await axios.post("http://localhost:8084/api/auth/signup", {
+    await axios.post(`${API_URL}/api/auth/signup`, {
         name,
         email,
         password
     });
 
-    navigate("/");
+    navigate("/login");
     };
 
     return (
@@ -52,7 +53,7 @@ function Signup() {
             <button type="submit">Create Account</button>
         </form>
 
-        <p style={{marginTop: "10px"}}>Already have an account? <Link to="/">Login</Link></p>
+        <p style={{marginTop: "10px"}}>Already have an account? <Link to="/login">Login</Link></p>
     </div>
     );
 }
