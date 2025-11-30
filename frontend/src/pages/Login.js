@@ -7,46 +7,64 @@ function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
-    const navigate = useNavigate();
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setError('');
+    setIsLoading(true);
 
-    const handleLogin = async (e) => {
-        e.preventDefault();
-
-        try {
-            const res = await axios.post(`${API_URL}/api/login`, { email, password });
-
-            localStorage.setItem("token", res.data.token);
-            navigate("/employees");
-        } catch (err) {
-            setError("Invalid email or password");
+    try {
+      const res = await axios.post(`${API_URL}/api/v1/user/login`, { 
+        email, 
+        password 
+      }, {
+        headers: {
+          'Content-Type': 'application/json'
         }
-    };
-    return (
+      });
+
+      if (res.data.token) {
+        localStorage.setItem('token', res.data.token);
+        navigate('/employees');
+      } else {
+        throw new Error('No token received');
+      }
+    } catch (err) {
+      console.error('Login error:', err);
+      setError(err.response?.data?.message || 'Invalid email or password');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
     <div className="container">
-        <h2>Login</h2>
+      <h2>Login</h2>
 
-        {error && <p style={{ color: 'red' }}>{error}</p>}
+      {error && <p style={{ color: 'red' }}>{error}</p>}
 
-        <form onSubmit={handleLogin}>
-            <input
-                type="email"
-                placeholder="Email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-            />
+      <form onSubmit={handleLogin}>
+        <input
+          type="email"
+          placeholder="Email"
+          required
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
 
-            <input
-                type="password"
-                placeholder="Password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-            />
+        <input
+          type="password"
+          placeholder="Password"
+          required
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
 
-            <button type="submit">Login</button>
-        </form>
+        <button type="submit" disabled={isLoading}>
+          {isLoading ? 'Logging in...' : 'Login'}
+        </button>
 
         <p style={{marginTop: "10px"}}>Don't have an account? <Link to="/Signup">Signup</Link></p>
     </div>
