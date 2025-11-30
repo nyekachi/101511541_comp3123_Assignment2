@@ -53,4 +53,14 @@ router.delete('/employees',
     validateRequest,
     empCtrl.deleteEmployee
 );
+
+//Search employee
+router.get('/employees/search',
+    [
+        query('department').optional().trim(),
+        query('position').optional().trim(),
+    ],
+    validateRequest,
+    empCtrl.searchEmployees
+)
 module.exports = router;

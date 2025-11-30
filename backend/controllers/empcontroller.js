@@ -92,4 +92,26 @@ const deleteEmployee = async(req, res, next) => {
     }
 };
 
-module.exports = {listEmployees,createEmployee, getEmployee, updateEmployee, deleteEmployee}
+const searchEmployees = async (req, res, next) => {
+    try{
+        const {department, position} = req.query;
+        let query = {};
+
+        if(department) {
+            query.department = { $regex: department, $options: 'i'}
+        }
+        if(position) {
+            query.position = { $regex:position, $options: 'i'}
+        }
+
+        const employees = await Employee.find(query);
+        const formattedEmployees = employees.map(e => formatEmployeeResponse(e));
+
+        res.status(200).json(formattedEmployees);
+    }catch (error){
+        next(error);
+    }
+
+};
+
+module.exports = {listEmployees,createEmployee, getEmployee, updateEmployee, deleteEmployee, searchEmployees};

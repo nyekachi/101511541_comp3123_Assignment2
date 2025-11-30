@@ -16,3 +16,5 @@ yarn-error.log
 # MongoDB specific 
 /data/db
 *.mdb
+
+/uploads
