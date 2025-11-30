@@ -65,10 +65,11 @@ function Login() {
         <button type="submit" disabled={isLoading}>
           {isLoading ? 'Logging in...' : 'Login'}
         </button>
+      </form>
 
-        <p style={{marginTop: "10px"}}>Don't have an account? <Link to="/Signup">Signup</Link></p>
+      <p style={{marginTop: "10px"}}>Don't have an account? <Link to="/Signup">Signup</Link></p>
     </div>
-    );
+  );
 }
 
 export default Login;
