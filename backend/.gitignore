@@ -1,0 +1,18 @@
+# Dependencies
+/node_modules
+
+# Environment Variables and Secrets
+.env
+.env.*
+.DS_Store
+
+# Logs and npm debug files
+npm-debug.log
+yarn-error.log
+*.log
+
+.vscode/
+
+# MongoDB specific 
+/data/db
+*.mdb
