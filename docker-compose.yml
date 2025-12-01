@@ -4,7 +4,7 @@ services:
   frontend:
     build: ./frontend
     ports:
-      - "5000:80"  
+      - "3001:80"  # Frontend on port 3001
     depends_on:
       - backend
     environment:
@@ -16,7 +16,7 @@ services:
   backend:
     build: ./backend
     ports:
-      - "3001:3001"
+      - "5000:3001"  # Backend on port 5000
     environment:
       - NODE_ENV=production
       - MONGODB_URI=mongodb://mongodb:27017/employeeDB
