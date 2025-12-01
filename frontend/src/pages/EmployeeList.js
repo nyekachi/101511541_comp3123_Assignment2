@@ -7,7 +7,6 @@ function EmployeeList() {
     const [employees, setEmployees] = useState([]);
     const [search, setSearch] = useState("");
     const navigate = useNavigate();
-
     const token = localStorage.getItem("token");
 
     const fetchEmployees = async () => {
@@ -27,6 +26,7 @@ function EmployeeList() {
     }, []);
 
     const handleSearch = async (e) => {
+        e.preventDefault();
         try {
             const res = await axios.get(`${API_URL}/api/employees/search?department=${search}&position=${search}`, {
                 headers: getAuthHeader()
@@ -38,79 +38,83 @@ function EmployeeList() {
     };
 
     const deleteEmployee = async (id) => {
-        try {
-            await axios.delete(`${API_URL}/api/employees/${id}`, {
-                headers: getAuthHeader()
-            });
-            fetchEmployees();
-        } catch (error) {
-            console.error('Error deleting employee:', error);
+        if (window.confirm("Are you sure you want to delete this employee?")) {
+            try {
+                await axios.delete(`${API_URL}/api/employees/${id}`, {
+                    headers: getAuthHeader()
+                });
+                fetchEmployees();
+            } catch (error) {
+                console.error('Error deleting employee:', error);
+            }
         }
     };
 
-    const logout = () => {
-        localStorage.removeItem("token");
-        navigate("/");
+    const formatDate = (dateString) => {
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        return new Date(dateString).toLocaleDateString(undefined, options);
     };
 
     return (
         <div className="container">
             <h1>Employee List</h1>
-
-            <div style={{display:"flex", gap: "15px", marginBottom: "20px"}}>
-                <input 
-                    type="text" 
-                    placeholder="Search by department or position"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                />
-                <button onClick={handleSearch}>Search</button>
-                <button onClick={() => navigate("/employees/add")}>Add Employee</button>
-                <button className="logout-btn" on onClick={logout}>Logout</button>
+            <div className="employee-list-header">
+                <form onSubmit={handleSearch} className="search-form">
+                    <input
+                        type="text"
+                        placeholder="Search by department or position"
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                    />
+                    <button type="submit">Search</button>
+                </form>
+                <Link to="/employees/add" className="add-employee-btn">
+                    + Add Employee
+                </Link>
             </div>
-
-            <table className="table">
-                <thead>
-                    <tr>
-                        <th>first_name</th>
-                        <th>last_name</th>
-                        <th>email</th>
-                        <th>position</th>
-                        <th>department</th>
-                        <th>date_of_joining</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    {employees.map((emp) => (
-                        <tr key={emp.id}>
-                        //Display employee picture
-                        <td>
-                            {emp.picture && (
-                           <img 
-                                  src={`${API_URL}/${emp.picture}`} 
-                                  alt={`${emp.first_name} ${emp.last_name}`}
-                                  style={{ width: '50px', height: '50px', borderRadius: '50%' }}
-                              />
-                            )}
-                        </td>
-                            <td>{emp.first_name}</td>
-                            <td>{emp.last_name}</td>
-                            <td>{emp.email}</td>
-                            <td>{emp.position}</td>
-                            <td>{emp.department}</td>
-                            <td>{emp.date_of_joining}</td>
-                            <td>
-                                <Link to={`/employees/${emp.id}`}>View</Link> |{" "}
-                                <Link to={`/employees/edit/${emp.id}`}>Edit</Link> |{" "}
-                                <button onClick={() => deleteEmployee(emp.id)}
-                                    style={{background: "none", border:"none",color:"red"}}>Delete</button>
-                            </td>
+            <div className="table-container">
+                <table className="employee-table">
+                    <thead>
+                        <tr>
+                            <th>Email</th>
+                            <th>Position</th>
+                            <th>Salary</th>
+                            <th>Date Joined</th>
+                            <th>Department</th>
+                            <th>Actions</th>
                         </tr>
-                    ))}
-                </tbody>
+                    </thead>
+                    <tbody>
+                        {employees.map((emp) => (
+                            <tr key={emp._id || emp.id}>
+                                <td>{emp.email}</td>
+                                <td>{emp.position}</td>
+                                <td>${emp.salary?.toLocaleString()}</td>
+                                <td>{formatDate(emp.date_of_joining)}</td>
+                                <td>{emp.department}</td>
+                                <td className="actions">
+                                    <Link to={`/employees/edit/${emp._id || emp.id}`} className="edit-btn">Edit</Link>
+                                    <button 
+                                        onClick={() => deleteEmployee(emp._id || emp.id)}
+                                        className="delete-btn"
+                                    >
+                                        Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
                 </table>
+            </div>
+            <button 
+                onClick={() => {
+                    localStorage.removeItem("token");
+                    navigate("/");
+                }} 
+                className="logout-btn"
+            >
+                Logout
+            </button>
         </div>
     );
 }
